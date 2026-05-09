@@ -32,7 +32,7 @@ RUN bash ./models/download-ggml-model.sh base.en \
 # App
 WORKDIR /app
 COPY app/requirements.txt /app/requirements.txt
-RUN pip3 install --no-cache-dir -r /app/requirements.txt
+RUN pip3 install --no-cache-dir --break-system-packages -r /app/requirements.txt
 COPY app /app
 
 ENV DATA_DIR=/data

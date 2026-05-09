@@ -90,6 +90,10 @@ def transcribe(
     # whisper-cli writes output via -of (without extension)
     out_base = OUT_DIR / job
 
+    # produce multiple timestamped outputs
+    # -otxt: plain text
+    # -osrt: subtitles with timestamps
+    # -ovtt: webvtt with timestamps
     cmd_wh = [
         WHISPER_BIN,
         "-m",
@@ -97,14 +101,23 @@ def transcribe(
         "-f",
         str(wav_path),
         "-otxt",
+        "-osrt",
+        "-ovtt",
         "-of",
         str(out_base),
     ]
     subprocess.check_call(cmd_wh)
 
-    if not out_txt.exists():
+    out_srt = OUT_DIR / f"{job}.srt"
+    out_vtt = OUT_DIR / f"{job}.vtt"
+    if not out_txt.exists() and not out_srt.exists() and not out_vtt.exists():
         raise HTTPException(500, "transcription output not found")
 
+    # prefer timestamped output
+    if out_vtt.exists():
+        return RedirectResponse(url=f"/out/{out_vtt.name}", status_code=303)
+    if out_srt.exists():
+        return RedirectResponse(url=f"/out/{out_srt.name}", status_code=303)
     return RedirectResponse(url=f"/out/{out_txt.name}", status_code=303)
 
 

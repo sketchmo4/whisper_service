@@ -1,0 +1,15 @@
+services:
+  whisper_service:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: whisper_service
+    restart: unless-stopped
+    ports:
+      - "${UI_PORT:-4060}:4060"
+    environment:
+      - DATA_DIR=/data
+    volumes:
+      - ${DATA_DIR:-./data}:/data
+      # Optional: mount models to avoid rebuilding to change model
+      - ${MODELS_DIR:-./models}:/models

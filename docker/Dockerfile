@@ -11,6 +11,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
     python3-pip \
     ffmpeg \
     ca-certificates \
+    curl \
   && rm -rf /var/lib/apt/lists/*
 
 # Build whisper.cpp

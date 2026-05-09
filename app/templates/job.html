@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Job {{ job.job_id }}</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px; max-width: 900px; }
+      pre { background:#111; color:#eee; padding: 12px; border-radius: 10px; overflow:auto; height: 420px; }
+      code { background:#f4f4f4; padding:2px 6px; border-radius:6px; }
+      .meta { color:#444; }
+    </style>
+  </head>
+  <body>
+    <h1>Transcription job</h1>
+    <div class="meta">
+      <div><b>Job ID:</b> <code>{{ job.job_id }}</code></div>
+      <div><b>Name:</b> <code>{{ job.name }}</code></div>
+      <div><b>Stage:</b> <span id="stage">{{ job.stage }}</span></div>
+      <div><b>Audio seconds:</b> {{ '%.1f' % job.audio_seconds }}</div>
+      <div><b>ETA:</b> <span id="eta">{% if eta is not none %}~{{ (eta|int) }}s{% else %}unknown{% endif %}</span></div>
+    </div>
+
+    {% if outputs %}
+      <h2>Outputs</h2>
+      <ul>
+        {% for o in outputs %}
+          <li><a href="/out/{{ o }}">{{ o }}</a></li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <h2>Live log</h2>
+    <pre id="log"></pre>
+
+    <script>
+      const logEl = document.getElementById('log');
+      const stageEl = document.getElementById('stage');
+      const etaEl = document.getElementById('eta');
+      const es = new EventSource(`/jobs/{{ job.job_id }}/events`);
+      es.onmessage = (ev) => {
+        if (ev.data.startsWith('__STATUS__')) {
+          const parts = ev.data.split(' ');
+          stageEl.textContent = parts[1] || 'done';
+          etaEl.textContent = '0s';
+          es.close();
+          return;
+        }
+        logEl.textContent += ev.data + "\n";
+        logEl.scrollTop = logEl.scrollHeight;
+      };
+    </script>
+  </body>
+</html>

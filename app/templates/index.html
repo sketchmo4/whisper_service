@@ -17,6 +17,7 @@
   <body>
     <h1>Whisper transcription</h1>
     <div class="hint">Model: <code>{{ model }}</code></div>
+    <div class="hint">After upload, you'll get a live status page with streaming logs (SSE).</div>
 
     <form action="/transcribe" method="post" enctype="multipart/form-data">
       <label>Job name (optional)</label>
@@ -29,14 +30,14 @@
       <button type="submit">Transcribe</button>
     </form>
 
-    <h2>Recent transcripts</h2>
+    <h2>Recent outputs (VTT)</h2>
     <table>
       <thead><tr><th>File</th><th>Download</th></tr></thead>
       <tbody>
-        {% for j in jobs %}
+        {% for o in outs %}
           <tr>
-            <td>{{ j.name }}</td>
-            <td><a href="/out/{{ j.name }}">download</a></td>
+            <td>{{ o.name }}</td>
+            <td><a href="/out/{{ o.name }}">download</a></td>
           </tr>
         {% endfor %}
       </tbody>

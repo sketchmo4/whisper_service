@@ -11,5 +11,5 @@ services:
       - DATA_DIR=/data
     volumes:
       - ${DATA_DIR:-./data}:/data
-      # Optional: mount models to avoid rebuilding to change model
-      - ${MODELS_DIR:-./models}:/models
+      # Models live in the image by default. Only mount /models if you know what you're doing.
+      # - ${MODELS_DIR:-./models}:/models
